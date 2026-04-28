@@ -2,11 +2,11 @@
 const CACHE_NAME = 'comb-v1';
 
 const ARQUIVOS = [
-  '/comb/',
-  '/comb/index.html',
-  '/comb/manifest.json',
-  '/comb/icons/icon-192.png',
-  '/comb/icons/icon-512.png',
+  '/abastece/',
+  '/abastece/index.html',
+  '/abastece/manifest.json',
+  '/abastece/icons/icon-192.png',
+  '/abastece/icons/icon-512.png',
 ];
 
 self.addEventListener('install', (e) => {
