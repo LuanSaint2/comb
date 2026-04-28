@@ -1,5 +1,5 @@
 // sw.js — Service Worker para Controle de Abastecimento
-const CACHE_NAME = 'comb-v1';
+const CACHE_NAME = 'abastece-v1';
 
 const ARQUIVOS = [
   '/abastece/',
