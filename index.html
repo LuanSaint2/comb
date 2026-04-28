@@ -202,5 +202,13 @@ function renderizar(){
 function setFiltro(t){filtroAtivo=t;renderizar();}
 carregar();
 </script>
+<script>
+  // Registrar o Service Worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/abastece/sw.js')
+      .then(() => console.log('Service Worker registrado!'))
+      .catch(err => console.log('Falha ao registrar:', err));
+  }
+</script>
 </body>
 </html>
