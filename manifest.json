@@ -1,0 +1,24 @@
+{
+  "name": "Controle de Abastecimento",
+  "short_name": "Abastece",
+  "description": "Controle de abastecimento de combustível",
+  "start_url": "/abastece/",
+  "display": "standalone",
+  "background_color": "#f0f2f5",
+  "theme_color": "#1857BE",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/abastece/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/abastece/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

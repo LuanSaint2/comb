@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#1857BE"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="Abastece"/>
+<link rel="manifest" href="/abastece/manifest.json"/>
+<title>Abastecimento</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#1a1a1a;min-height:100vh}
+header{background:#1857BE;color:white;padding:16px 20px;font-size:18px;font-weight:500;position:sticky;top:0;z-index:10}
+header span{font-size:13px;opacity:.85;display:block;margin-top:2px}
+.container{padding:16px;max-width:600px;margin:0 auto}
+.resumo{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.card-resumo{background:white;border-radius:12px;padding:10px 8px;text-align:center;border:.5px solid #dde2ec}
+.card-resumo .label{font-size:10px;color:#888;margin-bottom:3px}
+.card-resumo .valor{font-size:15px;font-weight:500}
+.form-card{background:white;border-radius:12px;padding:16px;margin-bottom:16px;border:.5px solid #dde2ec}
+.form-card h2{font-size:14px;font-weight:500;margin-bottom:12px;color:#1857BE}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.form-group label{font-size:12px;color:#888;display:block;margin-bottom:4px}
+.form-group.full{grid-column:span 2}
+input,select{width:100%;border:.5px solid #ccc;border-radius:8px;padding:8px 10px;font-size:14px;background:#fafaf8;color:#1a1a1a}
+input:focus,select:focus{outline:none;border-color:#1857BE}
+.btn{cursor:pointer;border:.5px solid #ccc;background:transparent;border-radius:8px;padding:8px 16px;font-size:13px;color:#1a1a1a}
+.btn-blue{background:#1857BE;color:white;border-color:#0d3d8e;font-size:14px;padding:10px 18px;border-radius:8px;cursor:pointer;border:none;width:100%}
+.btn-del{background:#E24B4A;color:white;font-size:11px;padding:3px 8px;border-radius:6px;cursor:pointer;border:none}
+.erro{font-size:12px;color:#E24B4A;margin-top:8px;display:block}
+.abast-card{background:white;border-radius:12px;padding:16px;margin-bottom:10px;border:.5px solid #dde2ec}
+.abast-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.abast-icon{width:38px;height:38px;border-radius:50%;background:#E6F1FB;color:#1857BE;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.abast-info{margin-left:10px;flex:1}
+.abast-data{font-weight:500;font-size:14px}
+.abast-sub{font-size:12px;color:#888;margin-top:2px}
+.abast-valores{text-align:right}
+.abast-valores .v-total{font-size:17px;font-weight:500;color:#1857BE}
+.abast-valores .v-litros{font-size:12px;color:#888}
+.abast-detalhes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;border-top:.5px solid #eee;padding-top:10px;margin-top:4px}
+.detalhe-item .d-label{font-size:10px;color:#888}
+.detalhe-item .d-valor{font-size:13px;font-weight:500}
+.badge-comb{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin-top:4px;font-weight:500}
+.badge-gasolina{background:#FFF3CD;color:#8a5f00}
+.badge-etanol{background:#D4EDDA;color:#155724}
+.badge-diesel{background:#D1ECF1;color:#0c5460}
+.badge-gnv{background:#F0E6FF;color:#4a0080}
+.vazio{text-align:center;color:#aaa;font-size:14px;padding:2rem 0}
+#loading{text-align:center;padding:3rem;color:#888;font-size:14px}
+.grafico-bar{height:6px;border-radius:3px;background:#E6F1FB;margin-top:6px;overflow:hidden}
+.grafico-bar-fill{height:100%;background:#1857BE;border-radius:3px;transition:width .4s}
+.filtros{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.filtro-btn{font-size:12px;padding:5px 12px;border-radius:20px;border:.5px solid #ccc;background:white;cursor:pointer;color:#555}
+.filtro-btn.ativo{background:#1857BE;color:white;border-color:#1857BE}
+@media(prefers-color-scheme:dark){
+  body{background:#1a1a1a;color:#f0f0f0}
+  header{background:#0d3d8e}
+  .card-resumo,.form-card,.abast-card{background:#2a2a2a;border-color:#3a3a3a}
+  input,select{background:#333;color:#f0f0f0;border-color:#444}
+  .abast-sub,.card-resumo .label,.d-label{color:#aaa}
+  .abast-detalhes{border-color:#3a3a3a}
+  .filtro-btn{background:#2a2a2a;border-color:#444;color:#ccc}
+  .filtro-btn.ativo{background:#1857BE;color:white}
+  .grafico-bar{background:#333}
+  .badge-gasolina{background:#3d2e00;color:#ffd54f}
+  .badge-etanol{background:#0a2e14;color:#69f0ae}
+  .badge-diesel{background:#003340;color:#4dd0e1}
+  .badge-gnv{background:#1a0033;color:#ce93d8}
+}
+</style>
+</head>
+<body>
+<header>
+  Controle de Abastecimento
+  <span id="header-sub">carregando...</span>
+</header>
+<div class="container">
+  <div id="loading">Carregando dados...</div>
+  <div id="app" style="display:none">
+
+    <div class="resumo" id="resumo"></div>
+
+    <div class="form-card">
+      <h2>+ Registrar abastecimento</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Data</label>
+          <input id="inp-data" type="date"/>
+        </div>
+        <div class="form-group">
+          <label>Combustível</label>
+          <select id="inp-comb">
+            <option value="Gasolina">Gasolina</option>
+            <option value="Etanol">Etanol</option>
+            <option value="Diesel">Diesel</option>
+            <option value="GNV">GNV</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Litros / m³</label>
+          <input id="inp-litros" type="number" placeholder="Ex: 40" step="0.01" min="0"/>
+        </div>
+        <div class="form-group">
+          <label>Preço por litro (R$)</label>
+          <input id="inp-preco" type="number" placeholder="Ex: 6.49" step="0.01" min="0"/>
+        </div>
+        <div class="form-group">
+          <label>Hodômetro (km)</label>
+          <input id="inp-km" type="number" placeholder="Ex: 45230" min="0"/>
+        </div>
+        <div class="form-group">
+          <label>Posto (opcional)</label>
+          <input id="inp-posto" type="text" placeholder="Ex: Posto Shell"/>
+        </div>
+      </div>
+      <button class="btn-blue" onclick="adicionar()">Registrar abastecimento</button>
+      <span class="erro" id="msg-erro"></span>
+    </div>
+
+    <div class="filtros" id="filtros"></div>
+    <div id="lista"></div>
+  </div>
+</div>
+
+<script>
+let dados = [];
+let filtroAtivo = 'todos';
+const hoje = new Date().toISOString().split('T')[0];
+
+function carregar(){
+  try{ const d=localStorage.getItem('abastece-v1'); dados=d?JSON.parse(d):[]; }catch(e){dados=[];}
+  document.getElementById('inp-data').value=hoje;
+  document.getElementById('loading').style.display='none';
+  document.getElementById('app').style.display='block';
+  renderizar();
+}
+
+function salvar(){ localStorage.setItem('abastece-v1',JSON.stringify(dados)); }
+
+function adicionar(){
+  const data=document.getElementById('inp-data').value;
+  const comb=document.getElementById('inp-comb').value;
+  const litros=parseFloat(document.getElementById('inp-litros').value);
+  const preco=parseFloat(document.getElementById('inp-preco').value);
+  const km=parseInt(document.getElementById('inp-km').value);
+  const posto=document.getElementById('inp-posto').value.trim();
+  const erro=document.getElementById('msg-erro');
+  if(!data||isNaN(litros)||isNaN(preco)||isNaN(km)){
+    erro.textContent='Preencha data, litros, preço e hodômetro!';return;
+  }
+  erro.textContent='';
+  dados.unshift({id:Date.now(),data,comb,litros,preco,km,posto,total:+(litros*preco).toFixed(2)});
+  salvar();
+  document.getElementById('inp-litros').value='';
+  document.getElementById('inp-preco').value='';
+  document.getElementById('inp-km').value='';
+  document.getElementById('inp-posto').value='';
+  document.getElementById('inp-data').value=hoje;
+  renderizar();
+}
+
+function excluir(id){
+  if(!confirm('Remover este registro?'))return;
+  dados=dados.filter(d=>d.id!==id);
+  salvar();renderizar();
+}
+
+function fmtData(d){const[y,m,dia]=d.split('-');return`${dia}/${m}/${y}`;}
+
+function calcMedia(lista){
+  if(lista.length<2)return null;
+  const sorted=[...lista].sort((a,b)=>a.km-b.km);
+  let totalKm=0,totalLt=0;
+  for(let i=1;i<sorted.length;i++){
+    const diff=sorted[i].km-sorted[i-1].km;
+    if(diff>0){totalKm+=diff;totalLt+=sorted[i].litros;}
+  }
+  return totalLt>0?(totalKm/totalLt).toFixed(1):null;
+}
+
+function badgeClass(c){
+  if(c==='Gasolina')return'badge-gasolina';
+  if(c==='Etanol')return'badge-etanol';
+  if(c==='Diesel')return'badge-diesel';
+  return'badge-gnv';
+}
+
+function renderizar(){
+  const tipos=['todos',...new Set(dados.map(d=>d.comb))];
+  document.getElementById('filtros').innerHTML=tipos.map(t=>`
+    <button class="filtro-btn${filtroAtivo===t?' ativo':''}" onclick="setFiltro('${t}')">${t==='todos'?'Todos':t}</button>
+  `).join('');
+
+  const lista=filtroAtivo==='todos'?dados:dados.filter(d=>d.comb===filtroAtivo);
+  const totalGasto=lista.reduce((s,d)=>s+d.total,0);
+  const totalLitros=lista.reduce((s,d)=>s+d.litros,0);
+  const media=calcMedia(lista);
+  const ultimoKm=lista.length?Math.max(...lista.map(d=>d.km)):0;
+
+  document.getElementById('header-sub').textContent=
+    lista.length?`${lista.length} abastecimento(s) registrado(s)`:'Nenhum registro ainda';
+
+  document.getElementById('resumo').innerHTML=`
+    <div class="card-resumo">
+      <div class="label">Total gasto</div>
+      <div class="valor" style="color:#E24B4A">R$${totalGasto.toFixed(0)}</div>
+    </div>
+    <div class="card-resumo">
+      <div class="label">Litros</div>
+      <div class="valor">${totalLitros.toFixed(0)}L</div>
+    </div>
+    <div class="card-resumo">
+      <div class="label">Média</div>
+      <div class="valor" style="color:#1857BE">${media?media+'km/L':'--'}</div>
+    </div>
+    <div class="card-resumo">
+      <div class="label">Hodômetro</div>
+      <div class="valor">${ultimoKm?ultimoKm.toLocaleString('pt-BR'):'--'}</div>
+    </div>
+  `;
+
+  const el=document.getElementById('lista');
+  if(!lista.length){el.innerHTML='<div class="vazio">Nenhum abastecimento registrado.</div>';return;}
+
+  const maxTotal=Math.max(...lista.map(d=>d.total));
+
+  el.innerHTML=lista.map((d,i)=>{
+    const kmAnt=lista[i+1];
+    const distancia=kmAnt?(d.km-kmAnt.km):null;
+    const mediaEsse=distancia&&distancia>0?(distancia/d.litros).toFixed(1):null;
+    const pct=Math.round((d.total/maxTotal)*100);
+    return`
+    <div class="abast-card">
+      <div class="abast-header">
+        <div style="display:flex;align-items:center">
+          <div class="abast-icon">⛽</div>
+          <div class="abast-info">
+            <div class="abast-data">${fmtData(d.data)}</div>
+            <div class="abast-sub">${d.posto||'Posto não informado'}</div>
+            <span class="badge-comb ${badgeClass(d.comb)}">${d.comb}</span>
+          </div>
+        </div>
+        <div class="abast-valores">
+          <div class="v-total">R$ ${d.total.toFixed(2)}</div>
+          <div class="v-litros">${d.litros.toFixed(2)} L</div>
+          <button class="btn-del" onclick="excluir(${d.id})" style="margin-top:6px">Excluir</button>
+        </div>
+      </div>
+      <div class="grafico-bar"><div class="grafico-bar-fill" style="width:${pct}%"></div></div>
+      <div class="abast-detalhes">
+        <div class="detalhe-item">
+          <div class="d-label">Preço/L</div>
+          <div class="d-valor">R$ ${d.preco.toFixed(3)}</div>
+        </div>
+        <div class="detalhe-item">
+          <div class="d-label">Hodômetro</div>
+          <div class="d-valor">${d.km.toLocaleString('pt-BR')} km</div>
+        </div>
+        <div class="detalhe-item">
+          <div class="d-label">${mediaEsse?'Média trecho':'Distância'}</div>
+          <div class="d-valor">${mediaEsse?mediaEsse+' km/L':distancia?distancia+' km':'--'}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setFiltro(t){filtroAtivo=t;renderizar();}
+carregar();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('/abastece/sw.js');
+</script>
+</body>
+</html>
