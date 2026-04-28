@@ -13,7 +13,7 @@ self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ARQUIVOS))
   );
-  self.skipWaiting();
+  self.skipWaiting(); // Força a ativação imediata
 });
 
 self.addEventListener('activate', (e) => {
