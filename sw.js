@@ -1,12 +1,12 @@
 // sw.js — Service Worker para Controle de Abastecimento
-const CACHE_NAME = 'abastece-v1';
+const CACHE_NAME = 'comb-v1';
 
 const ARQUIVOS = [
-  '/abastece/',
-  '/abastece/index.html',
-  '/abastece/manifest.json',
-  '/abastece/icons/icon-192.png',
-  '/abastece/icons/icon-512.png',
+  '/comb/',
+  '/comb/index.html',
+  '/comb/manifest.json',
+  '/comb/icons/icon-192.png',
+  '/comb/icons/icon-512.png',
 ];
 
 self.addEventListener('install', (e) => {
@@ -35,7 +35,7 @@ self.addEventListener('fetch', (e) => {
         const clone = res.clone();
         caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
         return res;
-      }).catch(() => caches.match('/abastece/index.html'));
+      }).catch(() => caches.match('/comb/index.html'));
     })
   );
 });
